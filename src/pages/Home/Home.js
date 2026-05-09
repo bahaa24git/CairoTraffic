@@ -1,0 +1,306 @@
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { reportsService, roadsService, newsService } from '../../services/api';
+import { Loading, StatusBadge } from '../../components/common';
+
+const statusLabel = { smooth: 'سلس', moderate: 'معتدل', congested: 'مزدحم', severe: 'شديد' };
+const statusBar = { smooth: 'bg-emerald-500', moderate: 'bg-amber-500', congested: 'bg-orange-500', severe: 'bg-red-500' };
+
+export default function Home() {
+  const [summary, setSummary] = useState(null);
+  const [roads, setRoads] = useState([]);
+  const [news, setNews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [email, setEmail] = useState('');
+  const [subscribed, setSubscribed] = useState(false);
+
+  useEffect(() => {
+    const fetchAll = async () => {
+      try {
+        const [s, r, n] = await Promise.all([
+          reportsService.getSummary(),
+          roadsService.getAll(),
+          newsService.getAll()
+        ]);
+        setSummary(s.data);
+        setRoads(r.data.roads || []);
+        setNews(n.data.news?.slice(0, 3) || []);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAll();
+  }, []);
+
+  return (
+    <div className="hero-bg min-h-screen" dir="rtl">
+      {/* Hero */}
+      <section className="relative min-h-screen flex items-center overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 right-20 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 left-20 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl"></div>
+          {/* Grid lines */}
+          <svg className="absolute inset-0 w-full h-full opacity-5" xmlns="http://www.w3.org/2000/svg">
+            <defs><pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+              <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#14b8a6" strokeWidth="0.5"/>
+            </pattern></defs>
+            <rect width="100%" height="100%" fill="url(#grid)"/>
+          </svg>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-16 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <div className="inline-flex items-center gap-2 bg-teal-500/10 border border-teal-500/20 rounded-full px-4 py-1.5 text-teal-400 text-sm mb-6">
+                <span className="w-2 h-2 bg-teal-400 rounded-full animate-pulse"></span>
+                مراقبة مستمرة على مدار الساعة
+              </div>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-tight mb-6">
+                القاهرة الذكية
+                <span className="block text-transparent bg-clip-text bg-gradient-to-l from-teal-400 to-emerald-400">
+                  للمرور
+                </span>
+              </h1>
+              <p className="text-slate-300 text-lg leading-relaxed mb-8 max-w-xl">
+                منصة متطورة لإدارة ومراقبة حركة المرور في القاهرة الكبرى باستخدام أحدث تقنيات الذكاء الاصطناعي وإنترنت الأشياء في الوقت الحقيقي.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <Link to="/traffic" className="btn-primary text-base py-3 px-6">
+                  🚦 تابع حالة المرور
+                </Link>
+                <Link to="/about" className="btn-secondary text-base py-3 px-6">
+                  تعرف على المشروع
+                </Link>
+              </div>
+
+              {/* Quick stats */}
+              {!loading && summary && (
+                <div className="grid grid-cols-3 gap-4 mt-10">
+                  {[
+                    { v: summary.totalRoads, l: 'طريق مراقب', icon: '🛣️' },
+                    { v: summary.camerasOnline, l: 'كاميرا فعالة', icon: '📷' },
+                    { v: summary.activeIncidents, l: 'حادث نشط', icon: '⚠️' },
+                  ].map((s, i) => (
+                    <div key={i} className="glass-card p-4 text-center">
+                      <div className="text-2xl mb-1">{s.icon}</div>
+                      <div className="text-2xl font-black text-teal-400">{s.v}</div>
+                      <div className="text-slate-500 text-xs">{s.l}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Mock map visual */}
+            <div className="relative hidden lg:block">
+              <div className="glass-card p-4 relative overflow-hidden" style={{ height: '450px' }}>
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-teal-400 text-sm font-semibold">🗺️ خريطة المرور - القاهرة الكبرى</span>
+                  <span className="flex items-center gap-1.5 text-xs text-emerald-400">
+                    <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span> مباشر
+                  </span>
+                </div>
+                {/* Stylized map */}
+                <div className="relative h-full bg-navy-700/50 rounded-lg overflow-hidden">
+                  <svg viewBox="0 0 400 380" className="w-full h-full opacity-90">
+                    {/* Nile */}
+                    <path d="M 200 0 Q 180 80 190 160 Q 195 240 185 380" fill="none" stroke="#1e40af" strokeWidth="16" opacity="0.6"/>
+                    <path d="M 200 0 Q 180 80 190 160 Q 195 240 185 380" fill="none" stroke="#3b82f6" strokeWidth="8" opacity="0.4"/>
+                    {/* Roads */}
+                    <path d="M 0 120 L 400 120" stroke="#f59e0b" strokeWidth="3" opacity="0.7"/>
+                    <path d="M 0 200 L 400 200" stroke="#10b981" strokeWidth="3" opacity="0.7"/>
+                    <path d="M 0 280 L 400 280" stroke="#ef4444" strokeWidth="3" opacity="0.7"/>
+                    <path d="M 150 0 L 150 380" stroke="#10b981" strokeWidth="2.5" opacity="0.5"/>
+                    <path d="M 280 0 L 280 380" stroke="#f59e0b" strokeWidth="2.5" opacity="0.5"/>
+                    <path d="M 50 0 Q 100 100 80 200 Q 60 300 100 380" fill="none" stroke="#14b8a6" strokeWidth="2" opacity="0.6"/>
+                    <path d="M 350 0 Q 320 150 340 280 L 350 380" fill="none" stroke="#14b8a6" strokeWidth="2" opacity="0.6"/>
+                    {/* Markers */}
+                    {[[155, 115], [285, 195], [155, 275], [80, 195], [280, 280]].map(([x, y], i) => (
+                      <g key={i}>
+                        <circle cx={x} cy={y} r="8" fill={['#10b981','#f59e0b','#ef4444','#10b981','#f97316'][i]} opacity="0.8"/>
+                        <circle cx={x} cy={y} r="14" fill="none" stroke={['#10b981','#f59e0b','#ef4444','#10b981','#f97316'][i]} strokeWidth="1.5" opacity="0.4"/>
+                      </g>
+                    ))}
+                    {/* Labels */}
+                    <text x="210" y="100" fill="#60a5fa" fontSize="9" opacity="0.8">النيل</text>
+                    <text x="20" y="116" fill="#f59e0b" fontSize="8">كورنيش النيل</text>
+                    <text x="20" y="196" fill="#10b981" fontSize="8">محور 26 يوليو</text>
+                    <text x="20" y="276" fill="#ef4444" fontSize="8">صلاح سالم</text>
+                  </svg>
+                  {/* Legend */}
+                  <div className="absolute bottom-3 right-3 glass-card p-2 text-xs space-y-1">
+                    {[['سلس', '#10b981'], ['معتدل', '#f59e0b'], ['مزدحم', '#f97316'], ['شديد', '#ef4444']].map(([l, c]) => (
+                      <div key={l} className="flex items-center gap-2">
+                        <span className="w-3 h-1.5 rounded-full" style={{ background: c }}></span>
+                        <span className="text-slate-400">{l}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Live stats dashboard */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
+        <div className="text-center mb-10">
+          <h2 className="text-3xl font-black text-white mb-3">الإحصائيات الحية</h2>
+          <p className="text-slate-400">بيانات محدثة في الوقت الفعلي من شبكة الحساسات والكاميرات</p>
+            
+        </div>
+
+        {loading ? <Loading /> : summary ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            
+            {[
+              { icon: '🛣️', label: 'إجمالي الطرق', value: summary.totalRoads, color: 'teal' },
+              { icon: '⚠️', label: 'حوادث نشطة', value: summary.activeIncidents, color: 'red' },
+              { icon: '🚗', label: 'متوسط السرعة', value: `${summary.avgSpeed} كم/س`, color: 'green' },
+              { icon: '🔴', label: 'طرق مزدحمة', value: summary.congestedRoads, color: 'orange' },
+              { icon: '📷', label: 'كاميرات متصلة', value: `${summary.camerasOnline}/${summary.totalCameras}`, color: 'blue' },
+              { icon: '📡', label: 'حساسات فعالة', value: `${summary.sensorsOnline}/${summary.totalSensors}`, color: 'amber' },
+            ].map((s, i) => (
+              <div key={i} className="glass-card p-4 text-center hover:scale-105 transition-transform">
+                <div className="text-3xl mb-2">{s.icon}</div>
+                <div className="text-2xl font-black text-teal-400">{s.value}</div>
+                <div className="text-slate-400 text-xs mt-1">{s.label}</div>
+              </div>
+            ))}
+          </div>
+        ) : null}
+      </section>
+
+      {/* Congested Roads */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-black text-white">أكثر الطرق ازدحاماً</h2>
+          <Link to="/traffic" className="text-teal-400 hover:text-teal-300 text-sm transition-colors">عرض الكل ←</Link>
+        </div>
+        {loading ? <Loading /> : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {roads.sort((a, b) => b.congestionPercentage - a.congestionPercentage).slice(0, 6).map(road => (
+              <div key={road._id} className="glass-card p-4 hover:border-teal-500/30 transition-all">
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <h3 className="text-white font-semibold">{road.name}</h3>
+                    <p className="text-slate-500 text-xs">{road.area} • {road.lengthKm} كم</p>
+                  </div>
+                  <StatusBadge status={road.status} type="road" />
+                </div>
+                <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
+                  <span>الازدحام: {road.congestionPercentage}%</span>
+                  <span>السرعة: {road.averageSpeed} كم/س</span>
+                </div>
+                <div className="w-full bg-navy-700 rounded-full h-2">
+                  <div className={`h-2 rounded-full transition-all ${statusBar[road.status]}`}
+                    style={{ width: `${road.congestionPercentage}%` }}></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Features */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-black text-white mb-3">مميزات المنصة</h2>
+          <p className="text-slate-400">تقنيات متطورة لإدارة المرور بكفاءة عالية</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[
+            { icon: '🤖', title: 'ذكاء اصطناعي', desc: 'تحليل حركة المرور باستخدام خوارزميات الذكاء الاصطناعي للتنبؤ بالازدحام' },
+            { icon: '📡', title: 'شبكة حساسات', desc: 'شبكة متكاملة من الحساسات الذكية لقياس الكثافة والسرعة في الوقت الفعلي' },
+            { icon: '📷', title: 'كاميرات ذكية', desc: 'كاميرات متطورة مع رؤية حاسوبية لرصد المخالفات والحوادث تلقائياً' },
+            { icon: '📊', title: 'تحليلات متقدمة', desc: 'تقارير وإحصاءات تفصيلية لدعم اتخاذ القرار وتخطيط البنية التحتية' },
+            { icon: '🚨', title: 'إنذار فوري', desc: 'نظام إنذار مبكر يُخطر فرق الطوارئ فور وقوع أي حادث أو طارئ' },
+            { icon: '🌐', title: 'تكامل شامل', desc: 'تكامل مع أنظمة النقل العام والإشارات المرورية والخرائط الذكية' },
+          ].map((f, i) => (
+            <div key={i} className="glass-card p-6 hover:border-teal-500/30 hover:scale-105 transition-all group">
+              <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">{f.icon}</div>
+              <h3 className="text-white font-bold text-lg mb-2">{f.title}</h3>
+              <p className="text-slate-400 text-sm leading-relaxed">{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Technologies */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 border-t border-white/5">
+        <h2 className="text-2xl font-black text-white mb-8 text-center">التقنيات المستخدمة</h2>
+        <div className="flex flex-wrap justify-center gap-4">
+          {['React.js', 'Node.js', 'SQLite', 'Express.js', 'Tailwind CSS', 'JWT Auth', 'REST API', 'Recharts', 'IoT Sensors', 'AI/ML'].map(t => (
+            <span key={t} className="glass-card px-4 py-2 text-sm text-teal-400 font-medium border-teal-500/20 hover:border-teal-400/40 transition-colors cursor-default">{t}</span>
+          ))}
+        </div>
+      </section>
+
+      {/* Beneficiaries */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+        <h2 className="text-2xl font-black text-white mb-8 text-center">المستفيدون من المنصة</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { icon: '🏛️', title: 'الجهات الحكومية', desc: 'وزارة النقل ومحافظة القاهرة' },
+            { icon: '🚔', title: 'هيئة المرور', desc: 'ضباط ومراقبو المرور' },
+            { icon: '🚑', title: 'خدمات الطوارئ', desc: 'الإسعاف، الإطفاء، الشرطة' },
+            { icon: '👥', title: 'المواطنون', desc: 'سائقو السيارات والمشاة' },
+          ].map((b, i) => (
+            <div key={i} className="glass-card p-5 text-center hover:border-teal-500/30 transition-all">
+              <div className="text-4xl mb-3">{b.icon}</div>
+              <h3 className="text-white font-semibold mb-1">{b.title}</h3>
+              <p className="text-slate-500 text-xs">{b.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Latest News */}
+      {news.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl font-black text-white">آخر الأخبار</h2>
+            <Link to="/news" className="text-teal-400 hover:text-teal-300 text-sm transition-colors">عرض الكل ←</Link>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {news.map(item => (
+              <div key={item._id} className="glass-card overflow-hidden hover:border-teal-500/30 transition-all hover:scale-[1.02] group">
+                {item.imageUrl && (
+                  <div className="h-44 overflow-hidden">
+                    <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  </div>
+                )}
+                <div className="p-4">
+                  <p className="text-teal-500 text-xs mb-2">{new Date(item.publishedAt).toLocaleDateString('ar-EG')}</p>
+                  <h3 className="text-white font-bold mb-2 line-clamp-2">{item.title}</h3>
+                  <p className="text-slate-400 text-sm line-clamp-2">{item.content}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Newsletter */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+        <div className="glass-card p-8 text-center bg-gradient-to-r from-teal-500/10 to-emerald-500/10 border-teal-500/20">
+          <h2 className="text-2xl font-black text-white mb-3">اشترك في النشرة الإخبارية</h2>
+          <p className="text-slate-400 mb-6">احصل على آخر تحديثات المرور والأخبار مباشرة على بريدك الإلكتروني</p>
+          {subscribed ? (
+            <div className="text-emerald-400 text-lg">✅ تم اشتراكك بنجاح! شكراً لك</div>
+          ) : (
+            <form className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
+              onSubmit={e => { e.preventDefault(); if (email) setSubscribed(true); }}>
+              <input type="email" value={email} onChange={e => setEmail(e.target.value)}
+                placeholder="أدخل بريدك الإلكتروني" className="form-input flex-1" required />
+              <button type="submit" className="btn-primary whitespace-nowrap">اشترك الآن</button>
+            </form>
+          )}
+        </div>
+      </section>
+    </div>
+  );
+}
