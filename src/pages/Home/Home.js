@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { LoadScript, GoogleMap, Marker } from '@react-google-maps/api';
+import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import { reportsService, roadsService, newsService } from '../../services/api';
 import { Loading, StatusBadge } from '../../components/common';
 
@@ -14,6 +14,10 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+  const { isLoaded: isMapLoaded, loadError: mapLoadError } = useJsApiLoader({
+    id: 'cairo-traffic-google-map',
+    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY || ''
+  });
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -125,7 +129,15 @@ export default function Home() {
                   </span>
                 </div>
                 <div className="relative h-full bg-navy-700/50 rounded-lg overflow-hidden" style={{ height: '400px' }}>
-                  <LoadScript googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}>
+                  {mapLoadError ? (
+                    <div className="h-full flex items-center justify-center text-red-400 text-sm">
+                      تعذر تحميل الخريطة
+                    </div>
+                  ) : !isMapLoaded ? (
+                    <div className="h-full flex items-center justify-center">
+                      <Loading />
+                    </div>
+                  ) : (
                     <GoogleMap
                       mapContainerStyle={{ width: '100%', height: '100%' }}
                       center={mapCenter}
@@ -152,7 +164,7 @@ export default function Home() {
                         );
                       })}
                     </GoogleMap>
-                  </LoadScript>
+                  )}
                 </div>
               </div>
             </div>
