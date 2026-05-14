@@ -9,6 +9,7 @@ const navLinks = [
   { to: '/reports', label: 'التقارير' },
   { to: '/news', label: 'الأخبار' },
   { to: '/contact', label: 'اتصل بنا' },
+  { to: '/admin', label: 'لوحة التحكم', requiresRole: 'admin' },
 ];
 
 export default function Navbar() {
@@ -38,21 +39,20 @@ export default function Navbar() {
 
           {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-1">
-            {navLinks.map(l => (
-              <Link key={l.to} to={l.to}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${location.pathname === l.to ? 'text-teal-400 bg-teal-500/10' : 'text-slate-300 hover:text-teal-400 hover:bg-white/5'}`}>
-                {l.label}
-              </Link>
-            ))}
+            {navLinks.map(l => 
+              (!l.requiresRole || (user && user.role === l.requiresRole)) ? (
+                <Link key={l.to} to={l.to}
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${location.pathname === l.to ? 'text-teal-400 bg-teal-500/10' : 'text-slate-300 hover:text-teal-400 hover:bg-white/5'}`}>
+                  {l.label}
+                </Link>
+              ) : null
+            )}
           </div>
 
           {/* Auth buttons */}
           <div className="hidden md:flex items-center gap-3">
             {user ? (
               <>
-                {(user.role === 'admin' || user.role === 'officer') && (
-                  <Link to="/admin" className="text-sm text-teal-400 hover:text-teal-300 transition-colors">لوحة التحكم</Link>
-                )}
                 <span className="text-slate-400 text-sm">{user.fullName}</span>
                 <button onClick={logout} className="text-sm text-slate-400 hover:text-red-400 transition-colors">خروج</button>
               </>
@@ -77,12 +77,14 @@ export default function Navbar() {
         {/* Mobile menu */}
         {menuOpen && (
           <div className="md:hidden bg-navy-800/95 backdrop-blur-md rounded-xl mb-2 p-4 border border-teal-500/10">
-            {navLinks.map(l => (
-              <Link key={l.to} to={l.to} onClick={() => setMenuOpen(false)}
-                className={`block px-3 py-2.5 rounded-lg text-sm font-medium transition-all mb-1 ${location.pathname === l.to ? 'text-teal-400 bg-teal-500/10' : 'text-slate-300 hover:text-teal-400'}`}>
-                {l.label}
-              </Link>
-            ))}
+            {navLinks.map(l => 
+              (!l.requiresRole || (user && user.role === l.requiresRole)) ? (
+                <Link key={l.to} to={l.to} onClick={() => setMenuOpen(false)}
+                  className={`block px-3 py-2.5 rounded-lg text-sm font-medium transition-all mb-1 ${location.pathname === l.to ? 'text-teal-400 bg-teal-500/10' : 'text-slate-300 hover:text-teal-400'}`}>
+                  {l.label}
+                </Link>
+              ) : null
+            )}
             <div className="border-t border-white/10 mt-3 pt-3 flex gap-3">
               {user ? (
                 <button onClick={() => { logout(); setMenuOpen(false); }} className="text-sm text-red-400">خروج</button>

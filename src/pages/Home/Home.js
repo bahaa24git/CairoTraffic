@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { LoadScript, GoogleMap, Marker } from '@react-google-maps/api';
 import { reportsService, roadsService, newsService } from '../../services/api';
 import { Loading, StatusBadge } from '../../components/common';
 
@@ -33,6 +34,27 @@ export default function Home() {
     };
     fetchAll();
   }, []);
+
+  const mapCenter = { lat: 30.0444, lng: 31.2357 };
+  const mapOptions = {
+    styles: [
+      { elementType: 'geometry', stylers: [{ color: '#1a1d29' }] },
+      { elementType: 'labels.text.stroke', stylers: [{ color: '#1a1d29' }] },
+      { elementType: 'labels.text.fill', stylers: [{ color: '#9ca3af' }] },
+      { featureType: 'administrative.locality', elementType: 'labels.text.fill', stylers: [{ color: '#9ca3af' }] },
+      { featureType: 'poi', elementType: 'labels.text.fill', stylers: [{ color: '#9ca3af' }] },
+      { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#263c3f' }] },
+      { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#374151' }] },
+      { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#4b5563' }] },
+      { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#0ea5e9' }] },
+      { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#0c4a7a' }] }
+    ],
+    disableDefaultUI: false,
+    zoomControl: true,
+    mapTypeControl: false
+  };
+
+  const roadMarkers = roads.filter(road => road.latitude && road.longitude);
 
   return (
     <div className="hero-bg min-h-screen" dir="rtl">
@@ -102,42 +124,35 @@ export default function Home() {
                     <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span> مباشر
                   </span>
                 </div>
-                {/* Stylized map */}
-                <div className="relative h-full bg-navy-700/50 rounded-lg overflow-hidden">
-                  <svg viewBox="0 0 400 380" className="w-full h-full opacity-90">
-                    {/* Nile */}
-                    <path d="M 200 0 Q 180 80 190 160 Q 195 240 185 380" fill="none" stroke="#1e40af" strokeWidth="16" opacity="0.6"/>
-                    <path d="M 200 0 Q 180 80 190 160 Q 195 240 185 380" fill="none" stroke="#3b82f6" strokeWidth="8" opacity="0.4"/>
-                    {/* Roads */}
-                    <path d="M 0 120 L 400 120" stroke="#f59e0b" strokeWidth="3" opacity="0.7"/>
-                    <path d="M 0 200 L 400 200" stroke="#10b981" strokeWidth="3" opacity="0.7"/>
-                    <path d="M 0 280 L 400 280" stroke="#ef4444" strokeWidth="3" opacity="0.7"/>
-                    <path d="M 150 0 L 150 380" stroke="#10b981" strokeWidth="2.5" opacity="0.5"/>
-                    <path d="M 280 0 L 280 380" stroke="#f59e0b" strokeWidth="2.5" opacity="0.5"/>
-                    <path d="M 50 0 Q 100 100 80 200 Q 60 300 100 380" fill="none" stroke="#14b8a6" strokeWidth="2" opacity="0.6"/>
-                    <path d="M 350 0 Q 320 150 340 280 L 350 380" fill="none" stroke="#14b8a6" strokeWidth="2" opacity="0.6"/>
-                    {/* Markers */}
-                    {[[155, 115], [285, 195], [155, 275], [80, 195], [280, 280]].map(([x, y], i) => (
-                      <g key={i}>
-                        <circle cx={x} cy={y} r="8" fill={['#10b981','#f59e0b','#ef4444','#10b981','#f97316'][i]} opacity="0.8"/>
-                        <circle cx={x} cy={y} r="14" fill="none" stroke={['#10b981','#f59e0b','#ef4444','#10b981','#f97316'][i]} strokeWidth="1.5" opacity="0.4"/>
-                      </g>
-                    ))}
-                    {/* Labels */}
-                    <text x="210" y="100" fill="#60a5fa" fontSize="9" opacity="0.8">النيل</text>
-                    <text x="20" y="116" fill="#f59e0b" fontSize="8">كورنيش النيل</text>
-                    <text x="20" y="196" fill="#10b981" fontSize="8">محور 26 يوليو</text>
-                    <text x="20" y="276" fill="#ef4444" fontSize="8">صلاح سالم</text>
-                  </svg>
-                  {/* Legend */}
-                  <div className="absolute bottom-3 right-3 glass-card p-2 text-xs space-y-1">
-                    {[['سلس', '#10b981'], ['معتدل', '#f59e0b'], ['مزدحم', '#f97316'], ['شديد', '#ef4444']].map(([l, c]) => (
-                      <div key={l} className="flex items-center gap-2">
-                        <span className="w-3 h-1.5 rounded-full" style={{ background: c }}></span>
-                        <span className="text-slate-400">{l}</span>
-                      </div>
-                    ))}
-                  </div>
+                <div className="relative h-full bg-navy-700/50 rounded-lg overflow-hidden" style={{ height: '400px' }}>
+                  <LoadScript googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}>
+                    <GoogleMap
+                      mapContainerStyle={{ width: '100%', height: '100%' }}
+                      center={mapCenter}
+                      zoom={12}
+                      options={mapOptions}
+                    >
+                      {roadMarkers.map(road => {
+                        const iconUrl = road.status === 'smooth'
+                          ? 'https://maps.google.com/mapfiles/ms/icons/green-dot.png'
+                          : road.status === 'moderate'
+                            ? 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png'
+                            : road.status === 'congested'
+                              ? 'https://maps.google.com/mapfiles/ms/icons/orange-dot.png'
+                              : 'https://maps.google.com/mapfiles/ms/icons/red-dot.png';
+                        return (
+                          <Marker
+                            key={road._id}
+                            position={{ lat: parseFloat(road.latitude), lng: parseFloat(road.longitude) }}
+                            title={road.name}
+                            icon={{
+                              url: iconUrl,
+                            }}
+                          />
+                        );
+                      })}
+                    </GoogleMap>
+                  </LoadScript>
                 </div>
               </div>
             </div>
