@@ -31,6 +31,10 @@ const attachMethods = (user) => {
 };
 
 const User = {
+  async findAll() {
+    return db.prepare('SELECT * FROM users ORDER BY createdAt DESC, id DESC').all().map(toSafeJSON);
+  },
+
   async create({ fullName, email, password, role = 'user' }) {
     const cleanFullName = String(fullName || '').trim();
     const cleanEmail = normalizeEmail(email);
@@ -77,6 +81,61 @@ const User = {
     const lastLoginAt = new Date().toISOString();
     db.prepare('UPDATE users SET lastLoginAt = ? WHERE id = ?').run(lastLoginAt, id);
     return this.findById(id);
+  },
+
+  async update(id, data) {
+    const current = await this.findById(id);
+    if (!current) return null;
+
+    const cleanFullName = data.fullName !== undefined ? String(data.fullName || '').trim() : current.fullName;
+    const cleanEmail = data.email !== undefined ? normalizeEmail(data.email) : current.email;
+    const role = data.role ?? current.role;
+    const isActive = data.isActive !== undefined ? Number(Boolean(data.isActive)) : Number(current.isActive);
+
+    if (cleanFullName.length < 2 || cleanFullName.length > 80) {
+      const error = new Error('Full name must be between 2 and 80 characters.');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    if (!/^\S+@\S+\.\S+$/.test(cleanEmail)) {
+      const error = new Error('Email is invalid.');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    if (!['user', 'admin'].includes(role)) {
+      const error = new Error('Role is invalid.');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    if (data.password) {
+      if (String(data.password).length < 6) {
+        const error = new Error('Password must be at least 6 characters.');
+        error.statusCode = 400;
+        throw error;
+      }
+
+      const hashedPassword = await bcrypt.hash(data.password, 12);
+      db.prepare(`
+        UPDATE users
+        SET fullName = ?, email = ?, password = ?, role = ?, isActive = ?, updatedAt = CURRENT_TIMESTAMP
+        WHERE id = ?
+      `).run(cleanFullName, cleanEmail, hashedPassword, role, isActive, id);
+    } else {
+      db.prepare(`
+        UPDATE users
+        SET fullName = ?, email = ?, role = ?, isActive = ?, updatedAt = CURRENT_TIMESTAMP
+        WHERE id = ?
+      `).run(cleanFullName, cleanEmail, role, isActive, id);
+    }
+
+    return this.findById(id);
+  },
+
+  async deleteById(id) {
+    return db.prepare('DELETE FROM users WHERE id = ?').run(id).changes > 0;
   },
 
   async deleteOne({ email }) {

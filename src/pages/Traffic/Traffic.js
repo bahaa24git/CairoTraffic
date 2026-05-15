@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { roadsService } from "../../services/api";
 import { Loading } from "../../components/common";
+import useRefreshingData from "../../hooks/useRefreshingData";
 
 const statusLabel = {
   smooth: "سلس",
@@ -20,15 +21,15 @@ export default function Traffic() {
   const [roads, setRoads] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const loadRoads = useCallback(() => {
     roadsService
       .getAll()
-      .then((res) => {
-        setRoads(res.data.roads || []);
-      })
+      .then((res) => setRoads(res.data.roads || []))
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
+
+  useRefreshingData(loadRoads, [loadRoads], 8000);
 
   return (
     <main className="hero-bg min-h-screen pt-28 pb-16" dir="rtl">
@@ -44,7 +45,7 @@ export default function Traffic() {
           <Loading />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {roads
+            {[...roads]
               .sort((a, b) => b.congestionPercentage - a.congestionPercentage)
               .map((road) => (
                 <div
@@ -55,7 +56,7 @@ export default function Traffic() {
                     <div>
                       <h3 className="text-white font-bold text-lg">{road.name}</h3>
                       <p className="text-slate-500 text-sm">
-                        {road.area} • {road.length} كم
+                        {road.area} • {road.lengthKm} كم
                       </p>
                     </div>
 
@@ -70,14 +71,12 @@ export default function Traffic() {
                     </p>
 
                     <p className="text-slate-400 text-sm">
-                      السرعة: {road.avgSpeed} كم/س
+                      السرعة: {road.averageSpeed} كم/س
                     </p>
 
                     <div className="w-full bg-navy-800 rounded-full h-2 overflow-hidden">
                       <div
-                        className={`h-full rounded-full ${
-                          statusBar[road.status] || "bg-teal-500"
-                        }`}
+                        className={`h-full rounded-full ${statusBar[road.status] || "bg-teal-500"}`}
                         style={{ width: `${road.congestionPercentage || 0}%` }}
                       />
                     </div>

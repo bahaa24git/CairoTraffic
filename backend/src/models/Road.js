@@ -26,9 +26,9 @@ const Road = {
     `).run(
       data.name,
       data.area || '',
-      Number(data.lengthKm || 0),
+      Number(data.lengthKm ?? data.length ?? 0),
       data.status || 'smooth',
-      Number(data.averageSpeed || 0),
+      Number(data.averageSpeed ?? data.avgSpeed ?? 0),
       Number(data.congestionPercentage || 0)
     );
 
@@ -46,9 +46,9 @@ const Road = {
     `).run(
       data.name ?? current.name,
       data.area ?? current.area,
-      Number(data.lengthKm ?? current.lengthKm),
+      Number(data.lengthKm ?? data.length ?? current.lengthKm),
       data.status ?? current.status,
-      Number(data.averageSpeed ?? current.averageSpeed),
+      Number(data.averageSpeed ?? data.avgSpeed ?? current.averageSpeed),
       Number(data.congestionPercentage ?? current.congestionPercentage),
       id
     );

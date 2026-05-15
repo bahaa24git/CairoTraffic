@@ -28,6 +28,13 @@ export const authService = {
   getMe: () => api.get('/auth/me'),
 };
 
+export const usersService = {
+  getAll: () => api.get('/users'),
+  create: (data) => api.post('/users', data),
+  update: (id, data) => api.put(`/users/${id}`, data),
+  delete: (id) => api.delete(`/users/${id}`),
+};
+
 export const roadsService = {
   getAll: (params) => api.get('/roads', { params }),
   getOne: (id) => api.get(`/roads/${id}`),
