@@ -76,9 +76,9 @@ export default function Home() {
           </svg>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-16 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-16 relative z-10">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 lg:gap-12 items-center">
+            <div className="min-w-0">
               <div className="inline-flex items-center gap-2 bg-teal-500/10 border border-teal-500/20 rounded-full px-4 py-1.5 text-teal-400 text-sm mb-6">
                 <span className="w-2 h-2 bg-teal-400 rounded-full animate-pulse"></span>
                 مراقبة مستمرة على مدار الساعة
@@ -120,15 +120,15 @@ export default function Home() {
             </div>
 
             {/* Mock map visual */}
-            <div className="relative hidden lg:block">
-              <div className="glass-card p-4 relative overflow-hidden" style={{ height: '450px' }}>
+            <div className="relative min-w-0 w-full">
+              <div className="glass-card p-3 sm:p-4 relative overflow-hidden h-[360px] sm:h-[420px] lg:h-[450px]">
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-teal-400 text-sm font-semibold">🗺️ خريطة المرور - القاهرة الكبرى</span>
                   <span className="flex items-center gap-1.5 text-xs text-emerald-400">
                     <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span> مباشر
                   </span>
                 </div>
-                <div className="relative h-full bg-navy-700/50 rounded-lg overflow-hidden" style={{ height: '400px' }}>
+                <div className="relative h-[calc(100%-2.25rem)] bg-navy-700/50 rounded-lg overflow-hidden">
                   {mapLoadError ? (
                     <div className="h-full flex items-center justify-center text-red-400 text-sm">
                       تعذر تحميل الخريطة
