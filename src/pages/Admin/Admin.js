@@ -44,7 +44,6 @@ const emptyDevice = {
 const emptyUser = {
   fullName: "",
   email: "",
-  password: "",
   role: "user",
   isActive: "true",
 };
@@ -448,7 +447,6 @@ export default function Admin() {
     setUser({
       fullName: item.fullName || "",
       email: item.email || "",
-      password: "",
       role: item.role || "user",
       isActive: String(Boolean(item.isActive)),
     });
@@ -600,7 +598,6 @@ export default function Admin() {
                 <AdminForm title="مستخدم" editing={editing.users} onSubmit={saveUser} onCancel={resetUser}>
                   <TextInput label="الاسم الكامل" value={user.fullName} required onChange={(value) => setUser({ ...user, fullName: value })} />
                   <TextInput label="البريد الإلكتروني" type="email" value={user.email} required onChange={(value) => setUser({ ...user, email: value })} />
-                  <TextInput label={editing.users ? "كلمة مرور جديدة (اختياري)" : "كلمة المرور"} type="password" value={user.password} required={!editing.users} onChange={(value) => setUser({ ...user, password: value })} />
                   <SelectInput label="الدور" value={user.role} options={userRoles} onChange={(value) => setUser({ ...user, role: value })} />
                   <SelectInput label="الحالة" value={String(user.isActive)} options={activeOptions} onChange={(value) => setUser({ ...user, isActive: value })} />
                 </AdminForm>
