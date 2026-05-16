@@ -73,10 +73,10 @@ function seedDefaultTrafficData() {
   if (sensorsCount === 0) {
     const insertSensor = db.prepare('INSERT INTO sensors (name, location, status) VALUES (?, ?, ?)');
     [
-      ['Sensor 1', 'كوبري أكتوبر', 'online'],
-      ['Sensor 2', 'صلاح سالم', 'online'],
-      ['Sensor 3', 'الدائري', 'online'],
-      ['Sensor 4', 'شارع الهرم', 'maintenance'],
+      ['Radar 1', 'كوبري أكتوبر', 'online'],
+      ['Radar 2', 'صلاح سالم', 'online'],
+      ['Radar 3', 'الدائري', 'online'],
+      ['Radar 4', 'شارع الهرم', 'maintenance'],
     ].forEach((sensor) => insertSensor.run(...sensor));
   }
 

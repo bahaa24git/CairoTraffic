@@ -27,7 +27,7 @@ export default function Footer() {
           <div>
             <h4 className="text-white font-semibold mb-4">روابط سريعة</h4>
             <div className="space-y-2">
-              {[['/', 'الرئيسية'], ['/about', 'عن المشروع'], ['/traffic', 'حالة المرور'], ['/reports', 'التقارير'], ['/news', 'الأخبار']].map(([to, label]) => (
+              {[['/', 'الرئيسية'], ['/about', 'عن المشروع'], ['/traffic', 'حالة المرور'], ['/radars', 'الرادارات'], ['/traffic-laws', 'قوانين المرور'], ['/reports', 'التقارير'], ['/news', 'الأخبار']].map(([to, label]) => (
                 <Link key={to} to={to} className="block text-slate-400 hover:text-teal-400 text-sm transition-colors">{label}</Link>
               ))}
             </div>

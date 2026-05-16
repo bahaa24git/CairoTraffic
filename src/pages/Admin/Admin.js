@@ -54,7 +54,7 @@ const tabs = [
   { id: "incidents", label: "الحوادث والبلاغات" },
   { id: "news", label: "الأخبار" },
   { id: "cameras", label: "الكاميرات" },
-  { id: "sensors", label: "الحساسات" },
+  { id: "sensors", label: "الرادارات" },
   { id: "users", label: "المستخدمون" },
   { id: "reports", label: "لوحة التقارير" },
 ];
@@ -103,6 +103,7 @@ const activeOptions = [
 
 const getId = (item) => item.id || item._id;
 const toNumber = (value) => Number(value || 0);
+const formatDeviceName = (name = "") => name.replace(/\bSensors\b/g, "Radars").replace(/\bSensor\b/g, "Radar");
 
 function Field({ label, children }) {
   return (
@@ -184,7 +185,7 @@ function DataList({ title, items, emptyText, renderMeta, onEdit, onDelete }) {
           <div key={getId(item)} className="rounded-lg border border-slate-700 p-4">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h3 className="font-semibold text-white">{item.name || item.title}</h3>
+                <h3 className="font-semibold text-white">{formatDeviceName(item.name || item.title)}</h3>
                 <p className="mt-1 text-sm text-slate-400">{renderMeta(item)}</p>
               </div>
               <div className="flex shrink-0 gap-2">
@@ -232,7 +233,7 @@ export default function Admin() {
     ["الحوادث النشطة", summary?.activeIncidents ?? incidents.filter(item => item.status === "active").length],
     ["متوسط السرعة", `${summary?.avgSpeed ?? 0} كم/س`],
     ["الكاميرات المتصلة", `${summary?.camerasOnline ?? 0}/${summary?.totalCameras ?? cameras.length}`],
-    ["الحساسات المتصلة", `${summary?.sensorsOnline ?? 0}/${summary?.totalSensors ?? sensors.length}`],
+    ["الرادارات المتصلة", `${summary?.sensorsOnline ?? 0}/${summary?.totalSensors ?? sensors.length}`],
   ], [cameras.length, incidents, roads.length, sensors.length, summary]);
 
   const loadAll = async () => {
@@ -366,7 +367,7 @@ export default function Admin() {
     const service = isCamera ? camerasService : sensorsService;
     const form = isCamera ? camera : sensor;
     const reset = isCamera ? resetCamera : resetSensor;
-    const label = isCamera ? "الكاميرا" : "الحساس";
+    const label = isCamera ? "الكاميرا" : "الرادار";
 
     runAction(
       () => id ? service.update(id, form) : service.create(form),
@@ -431,7 +432,7 @@ export default function Admin() {
 
   const editDevice = (item, kind) => {
     const value = {
-      name: item.name || "",
+      name: kind === "sensors" ? formatDeviceName(item.name || "") : item.name || "",
       location: item.location || "",
       status: item.status || "online",
     };
@@ -466,7 +467,7 @@ export default function Admin() {
         <div className="mb-8">
           <h1 className="mb-3 text-4xl font-black text-white">لوحة التحكم</h1>
           <p className="max-w-3xl text-slate-400">
-            إدارة بيانات النظام: الطرق، الحوادث، البلاغات، الأخبار، الكاميرات، الحساسات، والمستخدمين.
+            إدارة بيانات النظام: الطرق، الحوادث، البلاغات، الأخبار، الكاميرات، الرادارات، والمستخدمين.
           </p>
         </div>
 
@@ -578,18 +579,18 @@ export default function Admin() {
 
             {section === "sensors" && (
               <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                <AdminForm title="حساس" editing={editing.sensors} onSubmit={(event) => saveDevice(event, "sensors")} onCancel={resetSensor}>
-                  <TextInput label="اسم الحساس" value={sensor.name} required onChange={(value) => setSensor({ ...sensor, name: value })} />
+                <AdminForm title="رادار" editing={editing.sensors} onSubmit={(event) => saveDevice(event, "sensors")} onCancel={resetSensor}>
+                  <TextInput label="اسم الرادار" value={sensor.name} required onChange={(value) => setSensor({ ...sensor, name: value })} />
                   <TextInput label="الموقع" value={sensor.location} onChange={(value) => setSensor({ ...sensor, location: value })} />
                   <SelectInput label="الحالة" value={sensor.status} options={deviceStatuses} onChange={(value) => setSensor({ ...sensor, status: value })} />
                 </AdminForm>
                 <DataList
-                  title="الحساسات"
+                  title="الرادارات"
                   items={sensors}
-                  emptyText="لا توجد حساسات بعد."
+                  emptyText="لا توجد رادارات بعد."
                   renderMeta={(item) => `${item.location || "بدون موقع"} | ${item.status}`}
                   onEdit={(item) => editDevice(item, "sensors")}
-                  onDelete={(id) => confirmDelete("الحساس", () => sensorsService.delete(id))}
+                  onDelete={(id) => confirmDelete("الرادار", () => sensorsService.delete(id))}
                 />
               </section>
             )}
@@ -655,7 +656,7 @@ export default function Admin() {
                       ))}
                     </div>
                     <p className="mt-4 text-sm text-slate-500">
-                      التقارير يتم توليدها من الطرق والحوادث والكاميرات والحساسات. عدل هذه البيانات لتحديث قيم التقارير.
+                      التقارير يتم توليدها من الطرق والحوادث والكاميرات والرادارات. عدل هذه البيانات لتحديث قيم التقارير.
                     </p>
                   </div>
                 </div>

@@ -176,7 +176,7 @@ export default function Home() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
         <div className="text-center mb-10">
           <h2 className="text-3xl font-black text-white mb-3">الإحصائيات الحية</h2>
-          <p className="text-slate-400">بيانات محدثة في الوقت الفعلي من شبكة الحساسات والكاميرات</p>
+          <p className="text-slate-400">بيانات محدثة في الوقت الفعلي من شبكة الرادارات والكاميرات</p>
             
         </div>
 
@@ -189,7 +189,7 @@ export default function Home() {
               { icon: '🚗', label: 'متوسط السرعة', value: `${summary.avgSpeed} كم/س`, color: 'green' },
               { icon: '🔴', label: 'طرق مزدحمة', value: summary.congestedRoads, color: 'orange' },
               { icon: '📷', label: 'كاميرات متصلة', value: `${summary.camerasOnline}/${summary.totalCameras}`, color: 'blue' },
-              { icon: '📡', label: 'حساسات فعالة', value: `${summary.sensorsOnline}/${summary.totalSensors}`, color: 'amber' },
+              { icon: '📡', label: 'رادارات فعالة', value: `${summary.sensorsOnline}/${summary.totalSensors}`, color: 'amber' },
             ].map((s, i) => (
               <div key={i} className="glass-card p-4 text-center hover:scale-105 transition-transform">
                 <div className="text-3xl mb-2">{s.icon}</div>
@@ -199,6 +199,29 @@ export default function Home() {
             ))}
           </div>
         ) : null}
+      </section>
+
+      {/* Quick links */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <Link to="/radars" className="glass-card p-6 hover:border-teal-500/30 hover:scale-[1.01] transition-all">
+            <div className="mb-4 flex items-center gap-3">
+              <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-teal-500/10 text-2xl">📡</span>
+              <h2 className="text-2xl font-black text-white">الرادارات</h2>
+            </div>
+            <p className="text-slate-400 leading-7">اعرض حالة الرادارات الذكية ومواقعها داخل شبكة المرور.</p>
+            <span className="mt-5 inline-flex text-sm font-semibold text-teal-300">فتح صفحة الرادارات ←</span>
+          </Link>
+
+          <Link to="/traffic-laws" className="glass-card p-6 hover:border-teal-500/30 hover:scale-[1.01] transition-all">
+            <div className="mb-4 flex items-center gap-3">
+              <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-teal-500/10 text-2xl">📋</span>
+              <h2 className="text-2xl font-black text-white">قوانين السير والمرور</h2>
+            </div>
+            <p className="text-slate-400 leading-7">اطلع على القوانين المنظمة لكل نوع مركبة: ملاكي، نقل ثقيل، ودراجات بخارية أو نارية.</p>
+            <span className="mt-5 inline-flex text-sm font-semibold text-teal-300">فتح صفحة القوانين ←</span>
+          </Link>
+        </div>
       </section>
 
       {/* Congested Roads */}
@@ -241,7 +264,7 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[
             { icon: '🤖', title: 'ذكاء اصطناعي', desc: 'تحليل حركة المرور باستخدام خوارزميات الذكاء الاصطناعي للتنبؤ بالازدحام' },
-            { icon: '📡', title: 'شبكة حساسات', desc: 'شبكة متكاملة من الحساسات الذكية لقياس الكثافة والسرعة في الوقت الفعلي' },
+            { icon: '📡', title: 'شبكة رادارات', desc: 'شبكة متكاملة من الرادارات الذكية لقياس الكثافة والسرعة في الوقت الفعلي' },
             { icon: '📷', title: 'كاميرات ذكية', desc: 'كاميرات متطورة مع رؤية حاسوبية لرصد المخالفات والحوادث تلقائياً' },
             { icon: '📊', title: 'تحليلات متقدمة', desc: 'تقارير وإحصاءات تفصيلية لدعم اتخاذ القرار وتخطيط البنية التحتية' },
             { icon: '🚨', title: 'إنذار فوري', desc: 'نظام إنذار مبكر يُخطر فرق الطوارئ فور وقوع أي حادث أو طارئ' },
@@ -260,7 +283,7 @@ export default function Home() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 border-t border-white/5">
         <h2 className="text-2xl font-black text-white mb-8 text-center">التقنيات المستخدمة</h2>
         <div className="flex flex-wrap justify-center gap-4">
-          {['React.js', 'Node.js', 'SQLite', 'Express.js', 'Tailwind CSS', 'JWT Auth', 'REST API', 'Recharts', 'IoT Sensors', 'AI/ML'].map(t => (
+          {['React.js', 'Node.js', 'SQLite', 'Express.js', 'Tailwind CSS', 'JWT Auth', 'REST API', 'Recharts', 'Traffic Radars', 'AI/ML'].map(t => (
             <span key={t} className="glass-card px-4 py-2 text-sm text-teal-400 font-medium border-teal-500/20 hover:border-teal-400/40 transition-colors cursor-default">{t}</span>
           ))}
         </div>

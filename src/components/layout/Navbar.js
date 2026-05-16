@@ -6,6 +6,8 @@ const navLinks = [
   { to: '/', label: 'الرئيسية' },
   { to: '/about', label: 'عن المشروع' },
   { to: '/traffic', label: 'حالة المرور' },
+  { to: '/radars', label: 'الرادارات' },
+  { to: '/traffic-laws', label: 'قوانين المرور' },
   { to: '/reports', label: 'التقارير' },
   { to: '/news', label: 'الأخبار' },
   { to: '/contact', label: 'اتصل بنا' },
