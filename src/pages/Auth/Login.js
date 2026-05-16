@@ -67,7 +67,7 @@ export default function Login() {
             <div>
               <label htmlFor="email" className="block text-sm font-semibold text-slate-300 mb-2">البريد الإلكتروني</label>
               <div className="relative">
-                <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                <Mail className="pointer-events-none absolute left-3 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-slate-500" />
                 <input
                   id="email"
                   name="email"
@@ -75,8 +75,9 @@ export default function Login() {
                   autoComplete="email"
                   value={form.email}
                   onChange={handleChange}
-                  className="form-input pr-11"
-                  placeholder="admin@cairotraffic.com"
+                  dir="ltr"
+                  className="form-input auth-input-ltr"
+                  placeholder="you@example.com"
                   disabled={loading}
                 />
               </div>
@@ -85,7 +86,7 @@ export default function Login() {
             <div>
               <label htmlFor="password" className="block text-sm font-semibold text-slate-300 mb-2">كلمة المرور</label>
               <div className="relative">
-                <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                <Lock className="pointer-events-none absolute right-3 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-slate-500" />
                 <input
                   id="password"
                   name="password"
@@ -93,14 +94,14 @@ export default function Login() {
                   autoComplete="current-password"
                   value={form.password}
                   onChange={handleChange}
-                  className="form-input pr-11 pl-11"
+                  className="form-input auth-input-password"
                   placeholder="••••••••"
                   disabled={loading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(prev => !prev)}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-teal-400 transition-colors"
+                  className="absolute left-3 top-1/2 z-10 -translate-y-1/2 text-slate-500 transition-colors hover:text-teal-400"
                   aria-label={showPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -119,11 +120,6 @@ export default function Login() {
             <Link to="/register" className="text-teal-400 hover:text-teal-300 font-semibold">إنشاء حساب جديد</Link>
           </div>
 
-          <div className="mt-6 rounded-xl border border-teal-500/20 bg-teal-500/5 p-4 text-xs text-slate-400 leading-6">
-            <p className="font-semibold text-teal-300 mb-1">حساب تجربة بعد تشغيل seed:</p>
-            <p>Email: admin@cairotraffic.com</p>
-            <p>Password: Admin12345</p>
-          </div>
         </div>
       </section>
     </main>

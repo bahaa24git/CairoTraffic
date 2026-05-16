@@ -56,27 +56,27 @@ export default function Register() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm font-semibold text-slate-300 mb-2">الاسم الكامل</label>
+              <label htmlFor="fullName" className="block text-sm font-semibold text-slate-300 mb-2">الاسم الكامل</label>
               <div className="relative">
-                <User className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
-                <input name="fullName" value={form.fullName} onChange={handleChange} className="form-input pr-11" placeholder="أحمد محمد" disabled={loading} />
+                <User className="pointer-events-none absolute right-3 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-slate-500" />
+                <input id="fullName" name="fullName" autoComplete="name" value={form.fullName} onChange={handleChange} className="form-input auth-input-rtl-icon-right" placeholder="أحمد محمد" disabled={loading} />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-300 mb-2">البريد الإلكتروني</label>
+              <label htmlFor="register-email" className="block text-sm font-semibold text-slate-300 mb-2">البريد الإلكتروني</label>
               <div className="relative">
-                <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
-                <input name="email" type="email" value={form.email} onChange={handleChange} className="form-input pr-11" placeholder="you@example.com" disabled={loading} />
+                <Mail className="pointer-events-none absolute left-3 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-slate-500" />
+                <input id="register-email" name="email" type="email" autoComplete="email" dir="ltr" value={form.email} onChange={handleChange} className="form-input auth-input-ltr" placeholder="you@example.com" disabled={loading} />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-300 mb-2">كلمة المرور</label>
+              <label htmlFor="register-password" className="block text-sm font-semibold text-slate-300 mb-2">كلمة المرور</label>
               <div className="relative">
-                <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
-                <input name="password" type={showPassword ? 'text' : 'password'} value={form.password} onChange={handleChange} className="form-input pr-11 pl-11" placeholder="6 أحرف على الأقل" disabled={loading} />
-                <button type="button" onClick={() => setShowPassword(prev => !prev)} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-teal-400">
+                <Lock className="pointer-events-none absolute right-3 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-slate-500" />
+                <input id="register-password" name="password" type={showPassword ? 'text' : 'password'} autoComplete="new-password" value={form.password} onChange={handleChange} className="form-input auth-input-password" placeholder="6 أحرف على الأقل" disabled={loading} />
+                <button type="button" onClick={() => setShowPassword(prev => !prev)} className="absolute left-3 top-1/2 z-10 -translate-y-1/2 text-slate-500 hover:text-teal-400" aria-label={showPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}>
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>

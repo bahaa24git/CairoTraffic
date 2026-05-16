@@ -7,16 +7,24 @@ dotenv.config();
 const run = async () => {
   await connectDB();
 
-  await User.deleteOne({ email: 'admin@cairotraffic.com' });
+  const adminEmail = process.env.SEED_ADMIN_EMAIL;
+  const adminPassword = process.env.SEED_ADMIN_PASSWORD;
+  const adminName = process.env.SEED_ADMIN_NAME || 'Cairo Traffic Admin';
+
+  if (!adminEmail || !adminPassword) {
+    throw new Error('Set SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD before running the seed script.');
+  }
+
+  await User.deleteOne({ email: adminEmail });
 
   await User.create({
-    fullName: 'Cairo Traffic Admin',
-    email: 'admin@cairotraffic.com',
-    password: 'Admin12345',
+    fullName: adminName,
+    email: adminEmail,
+    password: adminPassword,
     role: 'admin',
   });
 
-  console.log('Seeded admin user: admin@cairotraffic.com / Admin12345');
+  console.log(`Seeded admin user: ${adminEmail}`);
   process.exit(0);
 };
 
